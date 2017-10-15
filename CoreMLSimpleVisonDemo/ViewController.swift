@@ -10,9 +10,19 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    let context = CIContext()
+    let model = SqueezeNet()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        guard let image = UIImage(named: "test.jpg") else { return }
+        let modelSize = CGSize(width: 227, height: 227)
         
+        guard let resizedPixelBuffer = CIImage(image: image)?.pixelBuffer(at: modelSize, context: context) else { return }
+        
+        let prediction = try? self.model.prediction(image: resizedPixelBuffer)
+        
+        print(prediction?.classLabel ?? "Unknown")
     }
 
     override func didReceiveMemoryWarning() {
@@ -55,4 +65,5 @@ extension CIImage {
         CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags(rawValue: 0))
         
         return pixelBuffer
+    }
 }
